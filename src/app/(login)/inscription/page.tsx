@@ -13,6 +13,7 @@ const schema = z.object({
     password: z.string().min(6, { message: 'Le mot de passe doit faire au moins 6 caractères' }),
 });
 
+
 const SignupForm = () => {
     const form = useForm({
         validate: zodResolver(schema),
