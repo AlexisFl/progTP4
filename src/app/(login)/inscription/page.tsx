@@ -3,7 +3,8 @@
 import React from 'react';
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
-import { TextInput, PasswordInput, Button, Box } from '@mantine/core';
+import { TextInput, PasswordInput, Box } from '@mantine/core';
+import { Button } from 'tp-kit/components';
 
 const schema = z.object({
     name: z.string().nonempty({ message: 'Le nom est requis' }),
@@ -13,6 +14,7 @@ const schema = z.object({
 
 const SignupForm = () => {
     const form = useForm({
+        validate: zodResolver(schema),
         initialValues: {
             email: '',
             password: '',
@@ -24,7 +26,7 @@ const SignupForm = () => {
 
     return (
         <Box maw={340} mx="auto">
-            <form onSubmit={form.onSubmit((values) => console.log(values))}>
+            <form onSubmit={form.onSubmit((values) => console.log(values))} className="space-y-8 mt-16">
                 <TextInput
                     withAsterisk
                     label="Nom"
@@ -44,12 +46,14 @@ const SignupForm = () => {
                     placeholder="Ke$$a..."
                     {...form.getInputProps('password')}
                 />
-                <Button type="submit" color="blue" style={{ marginTop: '16px' }}>
-                    S'inscrire
-                </Button>
-                <Button type="button" variant="link" style={{ marginTop: '16px' }}>
-                    Déjà inscrit ? Se connecter
-                </Button>
+                <div>
+                    <Button type="submit" fullWidth>
+                        S'inscrire
+                    </Button>
+                    <Button type="button" fullWidth variant="ghost">
+                        Déjà un compte ? Se connecter
+                    </Button>
+                </div>
             </form>
         </Box>
     );
