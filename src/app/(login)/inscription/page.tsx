@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { TextInput, PasswordInput, Box } from '@mantine/core';
 import {Button, NoticeMessage, NoticeMessageData} from 'tp-kit/components';
 import {useState} from "react";
+import {useRouter} from "next/navigation";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 const schema = z.object({
     name: z.string().nonempty({ message: 'Le nom est requis' }),
@@ -15,6 +17,14 @@ const schema = z.object({
 
 
 const SignupForm = () => {
+
+    const router = useRouter()
+    const supabase = createClientComponentClient()
+
+
+
+    const [notices, setNotices] = useState<NoticeMessageData[]>([]);
+
     const form = useForm({
         validate: zodResolver(schema),
         initialValues: {
@@ -23,9 +33,6 @@ const SignupForm = () => {
             name: '',
         },
     });
-
-    const [notices, setNotices] = useState<NoticeMessageData[]>([]);
-
     function addError() {
         setNotices( n => [...n, {type: "error", message: "Cette adresse n'est pas disponible"}])
     }
@@ -41,15 +48,32 @@ const SignupForm = () => {
         });
     }
 
-    const handleSignup = () => {
-        addError();
-        addSuccess();
-    };
+    const handleSignUp = async () => {
+        const valide = await supabase.auth.signUp({
+            email: form.values.email,
+            password: form.values.password,
+            options: {
+                emailRedirectTo: `${location.origin}/auth/callback`,
+            },
+        });
+        console.log("oui")
+        console.log(valide.error)
+        console.log("oui")
+        if(valide.error === null){
+            addSuccess();
+        }
+        else {
+            setNotices( n => [...n, {type: "error", message: "Cette adresse est déjà utilisé"}])
+        }
+
+            //router.refresh()
+    }
+
 
 
     return (
         <Box maw={340} mx="auto">
-            <form onSubmit={form.onSubmit((values) => console.log(values))} className="space-y-8 mt-16">
+            <form onSubmit={form.onSubmit(handleSignUp)} className="space-y-8 mt-16">
                 <ul>
                     {notices.map((notice, i) => <NoticeMessage
                         key={i}
@@ -77,7 +101,7 @@ const SignupForm = () => {
                     {...form.getInputProps('password')}
                 />
                 <div>
-                    <Button type="submit" onClick={handleSignup} fullWidth>
+                    <Button type="submit" fullWidth>
                         S'inscrire
                     </Button>
                     <Button type="button" fullWidth variant="ghost">
