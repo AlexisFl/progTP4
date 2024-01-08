@@ -53,7 +53,10 @@ const SignupForm = () => {
             email: form.values.email,
             password: form.values.password,
             options: {
-                emailRedirectTo: `${location.origin}/auth/callback`,
+                emailRedirectTo: `${location.origin}/api/auth/callback`,
+                data: {
+                    name: form.values.name,
+                },
             },
         });
         console.log("oui")

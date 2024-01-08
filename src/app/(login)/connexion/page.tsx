@@ -54,6 +54,10 @@ const SigninForm = () => {
         router.refresh()
     }
 
+    const handleCreateAccount = () => {
+        router.push('/inscription');
+    };
+
     return (
         <Box maw={340} mx="auto">
             <form  onSubmit={form.onSubmit((values) => console.log(values))} className="space-y-8 mt-16">
@@ -80,7 +84,7 @@ const SigninForm = () => {
                     <Button type="submit" fullWidth>
                         Se connecter
                     </Button>
-                    <Button type="button" fullWidth variant="ghost">
+                    <Button type="button" fullWidth variant="ghost" onClick={handleCreateAccount}>
                         Créer un compte
                     </Button>
                 </div>
