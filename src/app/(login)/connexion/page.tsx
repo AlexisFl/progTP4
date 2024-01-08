@@ -1,6 +1,6 @@
 // components/SigninForm.js
 "use client";
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
 import { TextInput, PasswordInput, Box } from '@mantine/core';
@@ -9,6 +9,7 @@ import {ProductFiltersResult} from "../../../types";
 import {variant} from "@mantine/styles/lib/theme/functions/fns/variant/variant";
 import {useRouter} from "next/navigation";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {getUser} from "../../../utils/supabase";
 
 const schema = z.object({
     email: z.string().email({ message: 'L\'email doit être au format valide' }),
@@ -19,6 +20,16 @@ const SigninForm = () => {
     const router = useRouter()
     const supabase = createClientComponentClient()
 
+    useEffect(() => {
+        const checkConnection = async () => {
+            const user = await getUser(supabase);
+            if (user) {
+                router.push('/');
+            }
+        };
+
+        checkConnection();
+    }, []);
 
 
     const [notices, setNotices] = useState<NoticeMessageData[]>([]);
@@ -47,11 +58,16 @@ const SigninForm = () => {
     }
 
     const handleSignIn = async () => {
-        await supabase.auth.signInWithPassword({
+        const connect = await supabase.auth.signInWithPassword({
             email: form.values.email,
             password: form.values.password,
         })
-        router.refresh()
+        if (connect.error === null) {
+            router.push('/mon-compte');
+        }
+        else {
+            setNotices( n => [...n, {type: "error", message: "Votre mot de passe ou votre adresse email est incorrecte, veuillez réessayer."}])
+        }
     }
 
     const handleCreateAccount = () => {
@@ -60,7 +76,7 @@ const SigninForm = () => {
 
     return (
         <Box maw={340} mx="auto">
-            <form  onSubmit={form.onSubmit((values) => console.log(values))} className="space-y-8 mt-16">
+            <form  onSubmit={form.onSubmit(handleSignIn)} className="space-y-8 mt-16">
                 <ul>
                     {notices.map((notice, i) => <NoticeMessage
                         key={i}

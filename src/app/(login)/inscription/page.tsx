@@ -1,6 +1,6 @@
 // components/SignupForm.js
 "use client";
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
 import { TextInput, PasswordInput, Box } from '@mantine/core';
@@ -8,6 +8,7 @@ import {Button, NoticeMessage, NoticeMessageData} from 'tp-kit/components';
 import {useState} from "react";
 import {useRouter} from "next/navigation";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {getUser} from "../../../utils/supabase";
 
 const schema = z.object({
     name: z.string().nonempty({ message: 'Le nom est requis' }),
@@ -21,7 +22,16 @@ const SignupForm = () => {
     const router = useRouter()
     const supabase = createClientComponentClient()
 
+    useEffect(() => {
+        const checkConnection = async () => {
+            const user = await getUser(supabase);
+            if (user) {
+                router.push('/');
+            }
+        };
 
+        checkConnection();
+    }, []);
 
     const [notices, setNotices] = useState<NoticeMessageData[]>([]);
 
@@ -72,6 +82,9 @@ const SignupForm = () => {
             //router.refresh()
     }
 
+    const handleAccessAccount = () => {
+        router.push('/connexion');
+    };
 
 
     return (
@@ -107,7 +120,7 @@ const SignupForm = () => {
                     <Button type="submit" fullWidth>
                         S'inscrire
                     </Button>
-                    <Button type="button" fullWidth variant="ghost">
+                    <Button type="button" fullWidth variant="ghost" onClick={handleAccessAccount}>
                         Déjà un compte ? Se connecter
                     </Button>
                 </div>
