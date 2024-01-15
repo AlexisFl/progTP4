@@ -1,7 +1,7 @@
 "use client";
 
-import { FC, memo, useCallback } from "react";
-import { ProductCartLine, FormattedPrice, Button } from "tp-kit/components";
+import React, {FC, memo, useCallback, useState} from "react";
+import {ProductCartLine, FormattedPrice, Button, NoticeMessageData, NoticeMessage} from "tp-kit/components";
 import {
   removeLine,
   updateLine,
@@ -10,19 +10,38 @@ import {
   clearCart,
 } from "../hooks/use-cart";
 import { createOrder } from "../actions/create-order";
+import {getUser} from "../utils/supabase";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 type Props = {};
 
 const Cart: FC<Props> = memo(function () {
   const lines = useCart((cart) => cart.lines);
   const wrapperClasses = "bg-white rounded-lg p-6 shadow-xl space-y-12";
-
+  const supabase = createClientComponentClient()
   const handleCreateOrder = useCallback(async () => {
-    await createOrder(useCart.getState());
-    clearCart();
+    const user = await getUser(supabase);
+    const result = await createOrder(useCart.getState(), user);
+    if (result.success) {
+        console.log("vidage du panier");
+        clearCart();
+
+    }
+    else {
+        setNotices( n => [...n, {type: "error", message: result.error}])
+    }
   }, []);
 
-  if (lines.length === 0)
+    const [notices, setNotices] = useState<NoticeMessageData[]>([]);
+
+    function removeNotice (index: number){
+        setNotices(n => {
+            delete(n[index]);
+            return Object.values(n)
+        });
+    }
+
+    if (lines.length === 0)
     return (
       <div className={wrapperClasses}>
         <p className="my-12 text-center text-gray-600 text-sm">
@@ -34,6 +53,13 @@ const Cart: FC<Props> = memo(function () {
   return (
     <div className={wrapperClasses}>
       <h2 className="text-sm uppercase font-bold tracking-wide">Mon panier</h2>
+        <ul>
+            {notices.map((notice, i) => <NoticeMessage
+                key={i}
+                {...notice}
+                onDismiss={() => removeNotice(i)}
+            />)}
+        </ul>
 
       <div className="space-y-4">
         {lines.map(({ product, qty }) => (
