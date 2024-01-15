@@ -63,6 +63,7 @@ const SigninForm = () => {
             password: form.values.password,
         })
         if (connect.error === null) {
+            router.refresh();
             router.push('/mon-compte');
         }
         else {
