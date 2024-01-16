@@ -8,6 +8,7 @@ export default function Layout ({children}: {children: ReactNode}) {
   const router = useRouter();
   const handleClose = useCallback(() => {
     router.replace("/mon-compte");
+    router.refresh();
   }, [router]);
   
   return <Transition appear show={true} as={Fragment}>

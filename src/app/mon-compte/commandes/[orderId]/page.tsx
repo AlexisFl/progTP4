@@ -1,7 +1,9 @@
-import { OrderDetailsLayout } from "tp-kit/components";
+import { OrderDetailsLayout} from "tp-kit/components";
 import { NextPageProps } from "../../../../types";
 import prisma from "../../../../utils/prisma";
 import { notFound } from "next/navigation";
+import RealTimeOrderDetails from "../realtime-order";
+
 
 type Props = {
   orderId: string;
@@ -20,5 +22,5 @@ export default async function OrderDetailsPage({params}: NextPageProps<Props>) {
 
   if (!order) notFound();
 
-  return <OrderDetailsLayout order={order} />
+  return <RealTimeOrderDetails order={order} />
 }
