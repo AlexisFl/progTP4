@@ -118,10 +118,10 @@ const SignupForm = () => {
                 />
                 <div>
                     <Button type="submit" fullWidth>
-                        S'inscrire
+                        {"S'inscrire"}
                     </Button>
                     <Button type="button" fullWidth variant="ghost" onClick={handleAccessAccount}>
-                        Déjà un compte ? Se connecter
+                        {"Déjà un compte ? Se connecter"}
                     </Button>
                 </div>
             </form>

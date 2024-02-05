@@ -32,6 +32,21 @@ const getProduct = cache((slug: string) => prisma.product.findUnique({
   }
 }));
 
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({
+    select: {
+      category: { select: { slug: true } },
+      slug: true,
+    },
+  });
+  return products.map((product) => ({
+    params: {
+      categorySlug: product.category.slug,
+      productSlug: product.slug,
+    },
+  }));
+}
+
 type Props = {
   categorySlug: string;
   productSlug: string;

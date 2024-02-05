@@ -35,7 +35,7 @@ export default function Page() {
   return (
       <SectionContainer>
         <div className="bg-white rounded-lg p-6 shadow-lg">
-        <h2>MON COMPTE</h2>
+        <h2>{"MON COMPTE"}</h2>
         {userDetails ? (
             <>
               <br></br>
@@ -46,7 +46,7 @@ export default function Page() {
               <br></br>
             </>
         ) : (
-            <p>Chargement des détails de l'utilisateur...</p>
+            <p>{"Chargement des détails de l'utilisateur..."}</p>
         )}
         <Button onClick={handleLogout}>Se déconnecter</Button>
         </div>
