@@ -5,6 +5,9 @@ import { NextRequest } from 'next/server'
 
 export async function POST(request: NextRequest) {
 
+  console.log("Rebuilding posts...")
+  revalidatePath("/[categorySlug]/[productSlug]")
+
   const apiKey = process.env.SUPABASE_WEBHOOK_KEY
 
   if(!request.headers.has("api-key"))
